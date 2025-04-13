@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fake News Detection</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background: linear-gradient(135deg, #0f2027, #2c5364);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        header,
+        footer {
+            background-color: #1a2a3a;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+        }
+
+        footer {
+            font-size: 0.9rem;
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 3fr 1fr;
+            grid-gap: 20px;
+            padding: 40px 20px;
+            height: calc(100vh - 120px);
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            height: 100%;
+        }
+
+        .left-section {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .news-list {
+            overflow-y: auto;
+            height: 300px;
+            position: relative;
+        }
+
+        .article {
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: rgba(255, 255, 255, 0.2);
+            font-size: small;
+            border-radius: 10px;
+            color: #ffb3b3;
+            cursor: pointer;
+            transition: background 0.3s ease-in-out;
+        }
+
+        .article:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .scrolling-news {
+            position: absolute;
+            top: 100%;
+            animation: scrollNews 20s linear infinite;
+        }
+
+        .news-list:hover .scrolling-news {
+            animation-play-state: paused;
+        }
+
+        @keyframes scrollNews {
+            0% {
+                top: 100%;
+            }
+
+            100% {
+                top: -100%;
+            }
+        }
+
+        .center-section {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .textarea {
+            width: 100%;
+            height: 250px;
+            padding: 15px;
+            border-radius: 10px;
+            border: none;
+            resize: none;
+            font-size: 16px;
+            margin-bottom: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .textarea:focus {
+            transform: scale(1.02);
+            border: 2px solid #ff416c;
+        }
+
+        .btn {
+            padding: 15px;
+            width: 100%;
+            background: #ff416c;
+            border: none;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #ff4b2b;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            transition: transform 0.3s ease;
+            display: none;
+            text-align: center;
+        }
+
+        .result.real {
+            background-color: rgba(0, 255, 0, 0.2);
+            color: #28ff28;
+        }
+
+        .result.fake {
+            background-color: rgba(255, 0, 0, 0.2);
+            color: #ff4d4d;
+        }
+
+        .feedback-form label {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .feedback-form input,
+        .feedback-form textarea {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            border: none;
+            font-size: 16px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            transition: transform 0.3s ease;
+        }
+
+        .feedback-form textarea {
+            height: 150px;
+        }
+
+        .feedback-form button {
+            width: 100%;
+            padding: 15px;
+            background: #ff416c;
+            border: none;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .feedback-form button:hover {
+            background-color: #ff4b2b;
+        }
+
+        #inputSection {
+            display: none;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        #startBtn {
+            display: block;
+            padding: 15px 30px;
+            font-size: 20px;
+            border-radius: 8px;
+            border: none;
+            background: #ff416c;
+            color: white;
+            transition: 0.3s ease;
+        }
+
+        #startBtn:hover {
+            background: #ff4b2b;
+        }
+
+        #thankYouOnly {
+            display: none;
+            font-size: 1.2rem;
+            color: #90ee90;
+            text-align: center;
+            padding-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+
+            .left-section,
+            .right-section {
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Fake News Detection 📰</h1>
+        <p>Check if a news article is Real or Fake!</p>
+    </header>
+
+    <div class="main-container">
+        <div class="section left-section">
+            <h4>Current News</h4>
+            <div class="news-list">
+                <div class="scrolling-news" id="news"></div>
+            </div>
+        </div>
+
+        <div class="section center-section">
+            <div id="startArea">
+                <button id="startBtn" onclick="showInputBox()">Start Checking News</button>
+            </div>
+            <div id="inputSection">
+                <textarea id="newsText" class="textarea" placeholder="Paste your news content here..."></textarea>
+                <button class="btn" onclick="checkNews()">Check News</button>
+                <div id="result" class="result"></div>
+            </div>
+        </div>
+
+        <div class="section right-section" id="feedbackSection">
+            <h4>Feedback</h4>
+            <form class="feedback-form" onsubmit="handleFeedback(event)">
+                <label for="name">Your Name</label>
+                <input type="text" id="name" placeholder="Enter your name" required />
+                <label for="feedback">Your Feedback</label>
+                <textarea id="feedback" placeholder="Enter your feedback" required></textarea>
+                <button type="submit">Submit Feedback</button>
+            </form>
+        </div>
+        <div class="section right-section" id="thankYouOnly"></div>
+    </div>
+
+    <footer>
+        <p>Fake News Detection | All Rights Reserved | 2025</p>
+    </footer>
+
+    <script>
+        function showInputBox() {
+            document.getElementById("startArea").style.display = "none";
+            document.getElementById("inputSection").style.display = "flex";
+        }
+
+        async function checkNews() {
+            const text = document.getElementById("newsText").value.trim();
+            const resultDiv = document.getElementById("result");
+            resultDiv.className = "result";
+            resultDiv.style.display = "none";
+
+            if (!text) {
+                alert("Please enter some text.");
+                return;
+            }
+
+            const response = await fetch("http://127.0.0.1:5000/predict", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ text: text }),
+            });
+
+            const data = await response.json();
+            const result = data.result;
+
+            resultDiv.textContent = result;
+            resultDiv.style.display = "block";
+            resultDiv.classList.add(result === "Real News" ? "real" : "fake");
+        }
+    </script>
+<script>
+    function handleFeedback(event) {
+        event.preventDefault();
+        const name = document.getElementById("name").value;
+        const thankYouText = `Thanks ${name} for your feedback!`;
+        document.getElementById("feedbackSection").style.display = "none";
+        const thankYouBox = document.getElementById("thankYouOnly");
+        thankYouBox.textContent = thankYouText;
+        thankYouBox.style.display = "block";
+    }
+
+    const apiKey = '611e4876ff4844dab50f65ae698c9e9d';
+    const url = `https://newsapi.org/v2/top-headlines?country=us&apiKey=${apiKey}`;
+
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            const articles = data.articles;
+            const container = document.getElementById('news');
+
+            articles.forEach(article => {
+                const div = document.createElement('div');
+                div.className = 'article';
+                div.innerHTML = `
+                    <h6>${article.title}</h6>
+                    <a href="${article.url}" target="_blank">Read more</a>
+                `;
+                container.appendChild(div);
+            });
+        })
+        .catch(error => console.error('Error fetching news:', error));
+</script>
+</body>
+
+</html>
